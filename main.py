@@ -1,5 +1,4 @@
 import discord 
-import win32gui 
 import json 
 import subprocess 
 import asyncio 
@@ -12,6 +11,7 @@ import time
 import cv2 
 import win32clipboard
 import win32process
+import win32con
 import win32gui
 import winreg
 import re
