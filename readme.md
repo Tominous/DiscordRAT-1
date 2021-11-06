@@ -19,7 +19,7 @@ Love ❌ code ✅
 
 ### 🔰・Features
 * ` Slash Commands!`
-* ` Many malicious commands`
+* ` 25+ Malicious Commands`
 * ` Buttons and Dropdowns/selection menus`
 * ` Easy to setup and use`
 * ` Up-to-date/modern version of https://github.com/Sp00p64/DiscordRAT`
@@ -91,6 +91,18 @@ UnBlocks user's keyboard and mouse
 
 > MsgBox
 make a messagebox popup on their screen with a custom message
+
+> Play
+Play a chosen youtube video in background
+
+> Stop_Play
+stop the video
+
+> AdminForce
+try and bypass uac and get admin rights
+
+> Startup
+Add the program to startup
 ```
 ### 📁・Setting up the RAT
 1. Start off by ofc installing [python](https://www.python.org/)
