@@ -109,7 +109,7 @@ Add the program to startup
 2. do `git clone https://github.com/Rdimo/DiscordRAT.git` and open a cmd in the same directory and type `pip install -r requirements.txt`
 3. Now time to get the bot token, follow this guide [here](https://www.writebots.com/discord-bot-token) on how to do that
 4. After you got your token you need to enable intents for the bot
-<img alt="Intents" src="https://cdn.discordapp.com/attachments/828047793619861557/888421741590884372/Screenshot_2021-09-17_154808.png">
+<img alt="Intents" src="https://cdn.discordapp.com/attachments/905814376043401249/909122826559176765/unknown.png">
 
 5. Go into main.py
    - go to where it says `token = 'BOT_TOKE_HERE'` (line 35)
